@@ -3,8 +3,9 @@
 The Terraform in `infra/terraform` provisions a complete production deployment. The
 maintainers develop and test against the local emulator (see
 [ADR-0005](../architecture/adr/0005-local-aws-emulation.md)); the AWS environments are kept
-valid (`terraform validate`, tflint, checkov) on every change, and this guide describes how
-to apply them in your own account.
+valid (`terraform validate`, tflint, checkov) on every change, and the whole `aws-dev`
+environment is applied and destroyed against the emulator (`make tf-aws-on-floci`, 148
+resources). This guide describes how to apply it in your own account.
 
 ## What gets created
 

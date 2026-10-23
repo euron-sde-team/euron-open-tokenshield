@@ -141,7 +141,7 @@ place to set limits and see exactly what was spent and what was avoided.
 | **Budgets** | Hard or soft; by organisation, team, project, API key, end user or model; daily, weekly, monthly or lifetime |
 | **Waste rules** | Prompt size, output caps, restricted models, prompt injection, retry storms, agent task caps |
 | **Overhead** | 2.5 ms p50 per request; cache hits answered in 2.2 ms p50 ([how measured](#-performance)) |
-| **Infrastructure** | 9 Terraform modules, 3 environments (local emulator, AWS dev, AWS prod) |
+| **Infrastructure** | 9 Terraform modules, 3 environments (local emulator, AWS dev, AWS prod); the full AWS stack applied end to end against Floci |
 | **Tests** | 131 unit, 82 integration (run under 4 backend combinations), 11 browser end-to-end, a browser QA sweep |
 | **License** | MIT |
 
@@ -395,8 +395,9 @@ terraform apply
 
 This creates a VPC, RDS PostgreSQL, ElastiCache (TLS, auth, `noeviction`), an encrypted
 exports bucket, a KMS key, Secrets Manager entries, ECR, ECS Fargate services behind an ALB
-with WAF, and CloudWatch alarms. The maintainers develop against the local emulator and keep
-the AWS environments passing `terraform validate`, tflint and checkov on every change. Step
+with WAF, and CloudWatch alarms. The maintainers develop against the local emulator; the AWS
+environments pass `terraform validate`, tflint and checkov, and the full `aws-dev` stack is
+applied and destroyed against Floci (`make tf-aws-on-floci`) on every infrastructure change. Step
 by step: [deploy guide](docs/guides/deploy-aws.md).
 
 ## 🔐 Security model
@@ -424,6 +425,7 @@ Report vulnerabilities privately: see [SECURITY.md](SECURITY.md). Details:
 | Browser (11) | Create a project, key and budget in the dashboard, call the gateway, see it accounted and cached, see the overspend blocked; playground; exports; roles | `make e2e` |
 | Browser QA | Every page in light and dark at desktop and phone width: no console errors, failed requests, broken images or overflow | `make qa` |
 | Infrastructure | `terraform validate` (3 environments), tflint, checkov, shellcheck, sanitization (secrets, account ids, em and en dashes) | `make tf-validate tf-lint tf-security sanitize` |
+| AWS on Floci | The full production environment (148 resources: VPC, RDS, ElastiCache, ECS Fargate, ALB, WAF, KMS, S3, Secrets Manager, ECR, CloudWatch) plans, applies, converges and destroys against an AWS API | `make tf-aws-on-floci` |
 
 [Testing guide](docs/guides/testing.md)
 

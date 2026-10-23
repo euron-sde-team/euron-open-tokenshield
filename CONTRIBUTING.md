@@ -35,6 +35,7 @@ make lint typecheck test
 make test-integration                  # the API against real Postgres and Redis
 make e2e                               # when you touched a dashboard flow or infrastructure
 make tf-validate tf-lint tf-security   # when you touched infra/terraform
+make tf-aws-on-floci                   # same: apply and destroy aws-dev against Floci
 make openapi                           # when you changed an endpoint (a test checks drift)
 make sanitize                          # no credentials, account ids, resource ids or dashes
 ```

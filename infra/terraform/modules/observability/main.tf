@@ -152,9 +152,11 @@ locals {
 
   # Per node: with noeviction a full cache refuses writes, so memory is the alarm that
   # matters most here.
+  # Keys use the node number (known at plan time); the node id, which embeds the
+  # replication group id and is only known after apply, goes in the values.
   cache_alarms = merge([
-    for node in local.cache_node : {
-      "${node}-memory" = {
+    for i, node in local.cache_node : {
+      "cache-node-${i + 1}-memory" = {
         description = "Cache node ${node}: memory above 80% (noeviction: writes fail at 100%)"
         namespace   = "AWS/ElastiCache"
         metric      = "DatabaseMemoryUsagePercentage"
@@ -164,7 +166,7 @@ locals {
         dimensions  = { CacheClusterId = node }
         comparison  = "GreaterThanThreshold"
       }
-      "${node}-cpu" = {
+      "cache-node-${i + 1}-cpu" = {
         description = "Cache node ${node}: engine CPU above 80%"
         namespace   = "AWS/ElastiCache"
         metric      = "EngineCPUUtilization"

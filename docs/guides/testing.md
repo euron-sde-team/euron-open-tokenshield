@@ -11,6 +11,7 @@ TokenShield has seven layers of automated checks. Each proves something differen
 | Browser e2e (11) | `make e2e` | `make up && make demo` | User journeys through the real dashboard, gateway, API and mock provider |
 | Browser QA | `make qa` | `make up && make demo` | Every page in light and dark, desktop and phone: no console errors, failed requests, broken images, error states or overflow |
 | Infrastructure | `make tf-validate tf-lint tf-security sanitize` | Docker | Terraform validity for three environments, tflint, checkov, and no secrets, cloud identifiers or em/en dashes in the tree |
+| AWS on Floci | `make tf-aws-on-floci` | Docker | The full `aws-dev` environment (148 resources) plans, applies, converges and destroys against an AWS API |
 
 ## Unit tests
 
@@ -81,6 +82,21 @@ make qa
 failed or 4xx/5xx requests, broken images, rendered error states and horizontal overflow.
 The screenshots are reviewed by a person before a release; the README captures come from
 this run.
+
+## AWS environment on Floci
+
+```bash
+make tf-aws-on-floci
+```
+
+`terraform validate` checks syntax and types, not what happens at plan and apply time. This
+target copies `infra/terraform` to a temp directory, points the unmodified `aws-dev`
+environment at a throwaway Floci with a provider override, requests a certificate from
+Floci's ACM, then runs plan, apply, a second plan and destroy. The second plan may show
+in-place updates for attributes Floci does not persist; any addition or replacement fails
+the run. The ECR repositories are removed from state before the destroy: Floci deletes
+repositories only when it can reach a backing registry container, which needs the Docker
+socket, and the script does not give the emulator that access. It takes about five minutes.
 
 ## Benchmark
 

@@ -13,9 +13,11 @@ TF_ENVS     := local-floci aws-dev aws-prod
 TF          := $(shell command -v terraform >/dev/null 2>&1 && echo terraform || echo docker run --rm -v $(CURDIR)/infra/terraform:/infra -w /infra $(TF_IMAGE))
 TF_ROOT     := $(shell command -v terraform >/dev/null 2>&1 && echo infra/terraform || echo /infra)
 ENV         ?= aws-dev
+# The demo password make env generated; e2e, qa and bench sign in with it.
+DEMO_PW      = $(shell grep -s '^TS_DEMO_PASSWORD=' $(COMPOSE_DIR)/.env | cut -d= -f2)
 
 .PHONY: help env up up-aws down logs ps demo test test-integration test-matrix e2e qa bench lint \
-        typecheck build openapi sanitize tf-fmt tf-validate tf-lint tf-security aws-plan clean
+        typecheck build openapi sanitize tf-fmt tf-validate tf-lint tf-security tf-aws-on-floci aws-plan clean
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage: make \033[36m<target>\033[0m\n\n"} /^[a-zA-Z0-9_-]+:.*##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -76,13 +78,13 @@ test-matrix: ## Integration tests under every key and storage backend (local, Fl
 	@scripts/test-matrix.sh
 
 e2e: ## Browser end-to-end tests (Playwright) against the running stack (make up && make demo)
-	cd e2e && pnpm install --frozen-lockfile && pnpm exec playwright install chromium && pnpm test
+	cd e2e && pnpm install --frozen-lockfile && pnpm exec playwright install chromium && E2E_PASSWORD='$(DEMO_PW)' pnpm test
 
 qa: ## Browser QA sweep (Puppeteer): every page, light and dark, desktop and phone
-	cd scripts/qa && pnpm install --frozen-lockfile && node qa.mjs
+	cd scripts/qa && pnpm install --frozen-lockfile && QA_PASSWORD='$(DEMO_PW)' node qa.mjs
 
 bench: ## Measure gateway overhead and throughput against the running stack
-	$(API) uv run python -m tokenshield.bench
+	$(API) DEMO_PASSWORD='$(DEMO_PW)' uv run python -m tokenshield.bench
 
 build: ## Build the container images
 	$(FLOCI) build
@@ -111,6 +113,9 @@ tf-lint: ## tflint every module and environment (plugins cached in a docker volu
 
 tf-security: ## checkov policy scan of the Terraform
 	docker run --rm -v $(CURDIR)/infra/terraform:/tf bridgecrew/checkov:3.3.30 -d /tf --framework terraform --quiet --compact
+
+tf-aws-on-floci: ## Plan, apply, re-plan and destroy the full aws-dev environment against a throwaway Floci
+	@scripts/tf-aws-on-floci.sh
 
 aws-plan: ## terraform plan for ENV (aws-dev | aws-prod); needs terraform.tfvars and AWS credentials
 	cd infra/terraform/envs/$(ENV) && terraform init -input=false && terraform plan

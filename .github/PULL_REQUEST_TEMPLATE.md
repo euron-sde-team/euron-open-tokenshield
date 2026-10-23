@@ -7,7 +7,7 @@
 - [ ] `make lint typecheck test`
 - [ ] `make test-integration` (if gateway, budget, cache, policy or database code changed)
 - [ ] `make e2e` (if a dashboard flow or infrastructure changed)
-- [ ] `make tf-validate tf-lint tf-security` (if Terraform changed)
+- [ ] `make tf-validate tf-lint tf-security tf-aws-on-floci` (if Terraform changed)
 
 ## Checklist
 
