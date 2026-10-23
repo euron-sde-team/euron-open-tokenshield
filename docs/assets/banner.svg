@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="t d">
-  <title id="t">Euron TokenShield</title>
+  <title id="t">Euron Open TokenShield</title>
   <desc id="d">Self-hosted AI gateway that stops LLM spend before it happens</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -22,7 +22,7 @@
   <rect width="1280" height="320" rx="16" fill="url(#grid)"/>
 
   <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
-    <text x="72" y="140" fill="#eef0fb" font-size="54" font-weight="650" letter-spacing="-1.2">Euron TokenShield</text>
+    <text x="72" y="140" fill="#eef0fb" font-size="54" font-weight="650" letter-spacing="-1.2">Euron Open TokenShield</text>
     <text x="74" y="186" fill="#9aa1c4" font-size="22" font-weight="400">Stop LLM spend before it happens. One OpenAI-compatible gateway.</text>
     <text x="74" y="246" font-family="JetBrains Mono, SFMono-Regular, Menlo, monospace" font-size="15" fill="#7e86ad" xml:space="preserve">atomic hard budgets<tspan fill="#2b3056">  /  </tspan>privacy-scoped cache<tspan fill="#2b3056">  /  </tspan>agent loop caps<tspan fill="#2b3056">  /  </tspan>Terraform</text>
   </g>

@@ -14,8 +14,8 @@ and the dashboard. No AWS account and no provider keys are needed.
 ## Start
 
 ```bash
-git clone https://github.com/euron-sde-team/euron-tokenshield.git
-cd euron-tokenshield
+git clone https://github.com/euron-sde-team/euron-open-tokenshield.git
+cd euron-open-tokenshield
 make up      # builds images, applies Terraform against Floci, migrates, starts everything
 make demo    # demo organisation, 60 days of history, live traffic through the gateway
 ```

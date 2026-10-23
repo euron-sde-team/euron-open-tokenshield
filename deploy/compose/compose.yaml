@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Euron TokenShield: local stack (cloud-agnostic base).
+# Euron Open TokenShield: local stack (cloud-agnostic base).
 #
 # Never run this file alone. Pair it with a cloud overlay:
 #   make up        # = compose.yaml + compose.floci.yaml  (emulated AWS, no account needed)

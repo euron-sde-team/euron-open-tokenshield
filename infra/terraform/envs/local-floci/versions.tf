@@ -28,7 +28,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "euron-tokenshield"
+      Project     = "euron-open-tokenshield"
       Environment = "local"
       ManagedBy   = "terraform"
     }

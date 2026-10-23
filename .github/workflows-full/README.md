@@ -1,6 +1,6 @@
 # Full CI pipeline (opt-in)
 
-These workflows are the complete quality pipeline for Euron TokenShield. They are kept
+These workflows are the complete quality pipeline for Euron Open TokenShield. They are kept
 here, outside `.github/workflows/`, so they do **not** run on the upstream repository.
 Only the fast [`checks`](../workflows/checks.yml) workflow (lint, typecheck, unit tests,
 web build) runs there.

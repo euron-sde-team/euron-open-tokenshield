@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="Euron TokenShield: stop LLM spend before it happens, with one OpenAI-compatible gateway" width="100%">
+  <img src="docs/assets/banner.svg" alt="Euron Open TokenShield: stop LLM spend before it happens, with one OpenAI-compatible gateway" width="100%">
 </p>
 
 <p align="center">
@@ -15,14 +15,16 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/euron-sde-team/euron-tokenshield/stargazers"><img alt="Star this repo" src="https://img.shields.io/github/stars/euron-sde-team/euron-tokenshield?style=social&label=Star%20this%20repo"></a>
-  <a href="https://github.com/euron-sde-team/euron-tokenshield/fork"><img alt="Fork" src="https://img.shields.io/github/forks/euron-sde-team/euron-tokenshield?style=social&label=Fork"></a>
-  <a href="https://github.com/euron-sde-team/euron-tokenshield/watchers"><img alt="Watch" src="https://img.shields.io/github/watchers/euron-sde-team/euron-tokenshield?style=social&label=Watch"></a>
+  <a href="https://github.com/euron-sde-team/euron-open-tokenshield/stargazers"><img alt="Star this repo" src="https://img.shields.io/github/stars/euron-sde-team/euron-open-tokenshield?style=social&label=Star%20this%20repo"></a>
+  <a href="https://github.com/euron-sde-team/euron-open-tokenshield/fork"><img alt="Fork" src="https://img.shields.io/github/forks/euron-sde-team/euron-open-tokenshield?style=social&label=Fork"></a>
+  <a href="https://github.com/euron-sde-team/euron-open-tokenshield/watchers"><img alt="Watch" src="https://img.shields.io/github/watchers/euron-sde-team/euron-open-tokenshield?style=social&label=Watch"></a>
   <br>
-  <a href="https://github.com/euron-sde-team/euron-tokenshield/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/euron-sde-team/euron-tokenshield?style=flat&color=818cf8"></a>
-  <a href="https://github.com/euron-sde-team/euron-tokenshield/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-34d399?style=flat"></a>
-  <a href="https://github.com/euron-sde-team/euron-tokenshield/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/euron-sde-team/euron-tokenshield?style=flat&color=8b95a8"></a>
+  <a href="https://github.com/euron-sde-team/euron-open-tokenshield/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/euron-sde-team/euron-open-tokenshield?style=flat&color=818cf8"></a>
+  <a href="https://github.com/euron-sde-team/euron-open-tokenshield/pulls"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-34d399?style=flat"></a>
+  <a href="https://github.com/euron-sde-team/euron-open-tokenshield/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/euron-sde-team/euron-open-tokenshield?style=flat&color=8b95a8"></a>
   <img alt="Runs locally with no AWS account" src="https://img.shields.io/badge/runs_locally-no_AWS_account_needed-0b0d1a?style=flat">
+  <br>
+  <a href="#built-by-the-team-behind-euron"><img alt="Built by the team behind Euron" src="https://img.shields.io/badge/built_by-Euron-4f46e5?style=flat"></a>
 </p>
 
 <p align="center">
@@ -36,7 +38,7 @@
   <b><a href="#-documentation">Docs</a></b>
 </p>
 
-**Euron TokenShield** is an open-source, MIT-licensed, self-hosted AI gateway, part of the
+**Euron Open TokenShield** is an open-source, MIT-licensed, self-hosted AI gateway, part of the
 open-source initiative of **ENGAGESPHERE TECHNOLOGY PRIVATE LIMITED**. It sits between your
 applications and their LLM providers and stops spend **before** it happens: every request is
 attributed, priced, checked against hard budgets and waste rules, served from cache when it
@@ -67,6 +69,24 @@ Terraform.
 > locally and provisioned by the same Terraform modules that build production. The demo
 > seed backfills 60 days of history; the most recent requests, cache hits and rejections are
 > live traffic through the gateway to a mock provider. `make up && make demo` reproduces it.
+
+<h3 align="center">Built by the team behind Euron</h3>
+
+<p align="center">Euron Open TokenShield comes from the people who build these platforms. If you like how this repository is built, come and see what we build with it.</p>
+
+<p align="center">
+  <a href="https://euron.one"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/euron-dark.svg"><img src="docs/assets/brand/euron-light.svg" alt="Euron: learn the latest technologies from industry experts. Visit euron.one" width="31%"></picture></a>
+  <a href="https://euronsystems.com"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/euron-systems-dark.svg"><img src="docs/assets/brand/euron-systems-light.svg" alt="Euron Systems: the SaaS platform for educators and creators. Visit euronsystems.com" width="31%"></picture></a>
+  <a href="https://alphaeuron.com"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/alpha-euron-dark.svg"><img src="docs/assets/brand/alpha-euron-light.svg" alt="Alpha Euron: where school kids grow creativity and tech skills with AI. Visit alphaeuron.com" width="31%"></picture></a>
+</p>
+
+<p align="center">
+  <a href="https://www.instagram.com/euron_official"><img src="https://img.shields.io/badge/Instagram-E4405F?style=flat-square&logo=instagram&logoColor=white" alt="Instagram"></a>
+  <a href="https://www.linkedin.com/company/euronone/posts/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+  <a href="https://x.com/euron712"><img src="https://img.shields.io/badge/X-000000?style=flat-square&logo=x&logoColor=white" alt="X"></a>
+  <a href="https://www.youtube.com/@Euron-official"><img src="https://img.shields.io/badge/YouTube-FF0000?style=flat-square&logo=youtube&logoColor=white" alt="YouTube"></a>
+  <a href="https://whatsapp.com/channel/0029VaeeJwq9RZAfPW9P2l07"><img src="https://img.shields.io/badge/WhatsApp_channel-25D366?style=flat-square&logo=whatsapp&logoColor=white" alt="WhatsApp channel"></a>
+</p>
 
 ---
 
@@ -276,8 +296,8 @@ miss from 24 ms to 3.6 ms ([ADR-0004](docs/architecture/adr/0004-usage-events-th
 ## 🚀 Quickstart
 
 ```bash
-git clone https://github.com/euron-sde-team/euron-tokenshield.git
-cd euron-tokenshield
+git clone https://github.com/euron-sde-team/euron-open-tokenshield.git
+cd euron-open-tokenshield
 make up      # Postgres, Redis, Floci (provisioned by Terraform), mock LLM, api, worker, dashboard
 make demo    # demo organisation, 60 days of history, live traffic; prints the login and a key
 ```
@@ -303,7 +323,7 @@ budget block, a retry storm and an agent cap. `make down` removes everything.
 ## 🧭 Explore the repository
 
 ```text
-euron-tokenshield/
+euron-open-tokenshield/
 ├── apps/
 │   ├── api/                 Python package: gateway, admin API, worker, mock LLM
 │   │   └── src/tokenshield/
@@ -432,7 +452,7 @@ Report vulnerabilities privately: see [SECURITY.md](SECURITY.md). Details:
 - More native provider adapters, and an approximate index for the semantic cache
 - A Helm chart alongside the Terraform
 
-Have an idea? [Open a feature request](https://github.com/euron-sde-team/euron-tokenshield/issues/new/choose).
+Have an idea? [Open a feature request](https://github.com/euron-sde-team/euron-open-tokenshield/issues/new/choose).
 
 ## ❓ FAQ
 
@@ -495,8 +515,8 @@ Contributions are welcome: read [CONTRIBUTING.md](CONTRIBUTING.md) and the
 [SECURITY.md](SECURITY.md).
 
 Released under the [MIT License](LICENSE). Copyright (c) 2026 ENGAGESPHERE TECHNOLOGY
-PRIVATE LIMITED and the Euron TokenShield contributors.
+PRIVATE LIMITED and the Euron Open TokenShield contributors.
 
 <p align="center">
-  If TokenShield saves you money, <b><a href="https://github.com/euron-sde-team/euron-tokenshield/stargazers">⭐ star the repository</a></b>.
+  If TokenShield saves you money, <b><a href="https://github.com/euron-sde-team/euron-open-tokenshield/stargazers">⭐ star the repository</a></b>.
 </p>

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Euron TokenShield
+  title: Euron Open TokenShield
   description: '
 
     Self-hosted AI gateway. Point any OpenAI SDK at `/v1` with a TokenShield key; every request

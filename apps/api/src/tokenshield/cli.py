@@ -95,7 +95,7 @@ def _openapi(_: argparse.Namespace) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(prog="tokenshield", description="Euron TokenShield")
+    parser = argparse.ArgumentParser(prog="tokenshield", description="Euron Open TokenShield")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("serve", help="run the API and gateway")

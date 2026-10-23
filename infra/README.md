@@ -1,6 +1,6 @@
 # Infrastructure
 
-Everything needed to run Euron TokenShield, from a laptop to a multi-AZ AWS
+Everything needed to run Euron Open TokenShield, from a laptop to a multi-AZ AWS
 deployment, as code.
 
 ```

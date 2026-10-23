@@ -1,4 +1,4 @@
-# Euron TokenShield: developer entry points. `make` lists every target.
+# Euron Open TokenShield: developer entry points. `make` lists every target.
 SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 

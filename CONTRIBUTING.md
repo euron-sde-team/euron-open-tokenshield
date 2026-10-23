@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Euron TokenShield. This guide covers the workflow, the bar a
+Thanks for helping improve Euron Open TokenShield. This guide covers the workflow, the bar a
 change has to clear, and the conventions the codebase follows.
 
 ## Ground rules

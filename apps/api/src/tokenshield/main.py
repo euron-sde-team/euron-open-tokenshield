@@ -60,7 +60,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
                 await app.state.container.close()
 
     app = FastAPI(
-        title="Euron TokenShield",
+        title="Euron Open TokenShield",
         version=__version__,
         description=DESCRIPTION,
         lifespan=lifespan,

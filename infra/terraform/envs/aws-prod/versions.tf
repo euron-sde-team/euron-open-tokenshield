@@ -10,7 +10,7 @@ provider "aws" {
   region = var.region
   default_tags {
     tags = merge({
-      Project     = "euron-tokenshield"
+      Project     = "euron-open-tokenshield"
       Environment = var.environment
       ManagedBy   = "terraform"
     }, var.extra_tags)

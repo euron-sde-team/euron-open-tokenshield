@@ -6,7 +6,7 @@
 # terraform {
 #   backend "s3" {
 #     bucket       = "<your-terraform-state-bucket>"
-#     key          = "euron-tokenshield/aws-dev.tfstate"
+#     key          = "euron-open-tokenshield/aws-dev.tfstate"
 #     region       = "<region>"
 #     encrypt      = true
 #     use_lockfile = true   # S3-native state locking (no DynamoDB table needed)

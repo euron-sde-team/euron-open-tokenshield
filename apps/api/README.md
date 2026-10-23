@@ -1,6 +1,6 @@
 # tokenshield (API, gateway and worker)
 
-The Python package behind Euron TokenShield: the OpenAI-compatible gateway (`/v1`), the
+The Python package behind Euron Open TokenShield: the OpenAI-compatible gateway (`/v1`), the
 dashboard API (`/api/v1`), the background worker, and a deterministic mock LLM provider
 used by the demo and the test suites.
 

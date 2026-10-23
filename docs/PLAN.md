@@ -1,11 +1,11 @@
-# Euron TokenShield 0.1.0: build plan
+# Euron Open TokenShield 0.1.0: build plan
 
 A self-hosted AI gateway that sits between applications and LLM providers. It tracks every
 token, enforces hard budgets **before** the upstream call, reuses eligible cached responses,
 and blocks wasteful requests. One OpenAI-compatible endpoint, central policies,
 provider-independent telemetry.
 
-Source brief: the "Euron TokenShield Detailed Project Blueprint" (Oct 2026). 0.1.0 is
+Source brief: the "Euron Open TokenShield Detailed Project Blueprint" (Oct 2026). 0.1.0 is
 "TokenShield Core" from that brief, plus the waste controls its MVP checklist requires.
 
 ## Purpose

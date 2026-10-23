@@ -1,7 +1,7 @@
 [project]
 name = "tokenshield"
 version = "0.1.0"
-description = "Euron TokenShield: a self-hosted AI gateway that tracks tokens, enforces hard budgets, caches responses and blocks wasteful LLM requests."
+description = "Euron Open TokenShield: a self-hosted AI gateway that tracks tokens, enforces hard budgets, caches responses and blocks wasteful LLM requests."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12,<3.14"

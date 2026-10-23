@@ -1,6 +1,6 @@
 # High-Level Design
 
-This document describes what Euron TokenShield is made of, how the pieces talk to each
+This document describes what Euron Open TokenShield is made of, how the pieces talk to each
 other, and how the system behaves under load and failure. The module-level detail is in the
 [Low-Level Design](LLD.md), the tables in the [Data Model](data-model.md), the two subsystems
 that carry most of the correctness argument in [Budgets](budgets.md) and
@@ -62,7 +62,7 @@ C4 level 1: TokenShield and the actors around it.
 flowchart LR
   app["Application or agent<br/>(OpenAI SDK, gateway API key)"]
   admin["Platform or finance admin<br/>(dashboard user)"]
-  ts["Euron TokenShield<br/>(one deployment, one organisation)"]
+  ts["Euron Open TokenShield<br/>(one deployment, one organisation)"]
   llm["LLM providers<br/>OpenAI-compatible APIs, Anthropic Messages API"]
   aws["AWS account services<br/>RDS, ElastiCache, S3, KMS, Secrets Manager, CloudWatch"]
 
