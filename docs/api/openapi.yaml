@@ -1,0 +1,4075 @@
+openapi: 3.1.0
+info:
+  title: Euron TokenShield
+  description: '
+
+    Self-hosted AI gateway. Point any OpenAI SDK at `/v1` with a TokenShield key; every request
+
+    is attributed, priced, checked against hard budgets and waste policies, served from cache
+
+    when safe, and recorded.
+
+
+    The `/api/v1` endpoints power the dashboard and are available to automation with a session
+
+    token (`POST /api/v1/auth/login`).
+
+    '
+  version: 0.1.0
+paths:
+  /v1/chat/completions:
+    post:
+      tags:
+      - gateway
+      summary: Create a chat completion (OpenAI-compatible)
+      operationId: chat_completions_v1_chat_completions_post
+      responses:
+        '200':
+          description: An OpenAI chat.completion object, or an SSE stream when stream=true
+          content:
+            application/json:
+              schema: {}
+  /v1/embeddings:
+    post:
+      tags:
+      - gateway
+      summary: Create embeddings (OpenAI-compatible)
+      operationId: embeddings_v1_embeddings_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /v1/models:
+    get:
+      tags:
+      - gateway
+      summary: List models available to this key
+      operationId: list_models_v1_models_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Models V1 Models Get
+  /api/v1/auth/login:
+    post:
+      tags:
+      - auth
+      summary: Sign in to the dashboard
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/logout:
+    post:
+      tags:
+      - auth
+      summary: Sign out
+      operationId: logout_api_v1_auth_logout_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+  /api/v1/auth/me:
+    get:
+      tags:
+      - auth
+      summary: The signed-in user
+      operationId: me_api_v1_auth_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+  /api/v1/auth/password:
+    post:
+      tags:
+      - auth
+      summary: Change your password
+      operationId: password_api_v1_auth_password_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/users:
+    get:
+      tags:
+      - users
+      summary: List dashboard users
+      operationId: list_users_api_v1_users_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserOut'
+                type: array
+                title: Response List Users Api V1 Users Get
+    post:
+      tags:
+      - users
+      summary: Invite a dashboard user
+      operationId: create_user_api_v1_users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/users/{user_id}:
+    patch:
+      tags:
+      - users
+      summary: Update a user's name, role or access
+      operationId: update_user_api_v1_users__user_id__patch
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: User Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/teams:
+    get:
+      tags:
+      - teams
+      summary: List teams
+      operationId: list_teams_api_v1_teams_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TeamOut'
+                type: array
+                title: Response List Teams Api V1 Teams Get
+    post:
+      tags:
+      - teams
+      summary: Create a team
+      operationId: create_team_api_v1_teams_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/teams/{team_id}:
+    patch:
+      tags:
+      - teams
+      summary: Update a team
+      operationId: update_team_api_v1_teams__team_id__patch
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Team Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - teams
+      summary: Delete an empty team
+      operationId: delete_team_api_v1_teams__team_id__delete
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Team Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/projects:
+    get:
+      tags:
+      - projects
+      summary: List projects
+      operationId: list_projects_api_v1_projects_get
+      parameters:
+      - name: include_archived
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Include Archived
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectOut'
+                title: Response List Projects Api V1 Projects Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - projects
+      summary: Create a project
+      operationId: create_project_api_v1_projects_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectIn'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/projects/{project_id}:
+    get:
+      tags:
+      - projects
+      summary: Get a project
+      operationId: get_project_api_v1_projects__project_id__get
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - projects
+      summary: Update or archive a project
+      operationId: update_project_api_v1_projects__project_id__patch
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/keys:
+    get:
+      tags:
+      - api keys
+      summary: List gateway API keys
+      operationId: list_keys_api_v1_keys_get
+      parameters:
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      - name: include_revoked
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Include Revoked
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyOut'
+                title: Response List Keys Api V1 Keys Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - api keys
+      summary: Create a key (shown once)
+      operationId: create_key_api_v1_keys_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyIn'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyCreated'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/keys/{key_id}:
+    patch:
+      tags:
+      - api keys
+      summary: Update a key's name or limits
+      operationId: update_key_api_v1_keys__key_id__patch
+      parameters:
+      - name: key_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Key Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/keys/{key_id}/revoke:
+    post:
+      tags:
+      - api keys
+      summary: Revoke a key immediately
+      operationId: revoke_key_api_v1_keys__key_id__revoke_post
+      parameters:
+      - name: key_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Key Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/providers:
+    get:
+      tags:
+      - providers and models
+      summary: List providers
+      operationId: list_providers_api_v1_providers_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ProviderOut'
+                type: array
+                title: Response List Providers Api V1 Providers Get
+    post:
+      tags:
+      - providers and models
+      summary: Add a provider
+      operationId: create_provider_api_v1_providers_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/providers/{provider_id}:
+    patch:
+      tags:
+      - providers and models
+      summary: Update a provider
+      operationId: update_provider_api_v1_providers__provider_id__patch
+      parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Provider Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/providers/{provider_id}/test:
+    post:
+      tags:
+      - providers and models
+      summary: Test connectivity
+      operationId: check_provider_api_v1_providers__provider_id__test_post
+      parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Provider Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderTest'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/models:
+    get:
+      tags:
+      - providers and models
+      summary: List models with current prices
+      operationId: list_models_api_v1_models_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ModelOut'
+                type: array
+                title: Response List Models Api V1 Models Get
+    post:
+      tags:
+      - providers and models
+      summary: Add a model alias
+      operationId: create_model_api_v1_models_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/models/{model_id}:
+    patch:
+      tags:
+      - providers and models
+      summary: Update a model
+      operationId: update_model_api_v1_models__model_id__patch
+      parameters:
+      - name: model_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Model Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/models/{model_id}/prices:
+    get:
+      tags:
+      - providers and models
+      summary: Price history
+      operationId: price_history_api_v1_models__model_id__prices_get
+      parameters:
+      - name: model_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Model Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PriceOut'
+                title: Response Price History Api V1 Models  Model Id  Prices Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - providers and models
+      summary: Publish a new price version
+      operationId: add_price_api_v1_models__model_id__prices_post
+      parameters:
+      - name: model_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Model Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceIn'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/budgets:
+    get:
+      tags:
+      - budgets
+      summary: List budgets with live spend
+      operationId: list_budgets_api_v1_budgets_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BudgetOut'
+                type: array
+                title: Response List Budgets Api V1 Budgets Get
+    post:
+      tags:
+      - budgets
+      summary: Create a budget
+      operationId: create_budget_api_v1_budgets_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/budgets/{budget_id}:
+    patch:
+      tags:
+      - budgets
+      summary: Update a budget
+      operationId: update_budget_api_v1_budgets__budget_id__patch
+      parameters:
+      - name: budget_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Budget Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - budgets
+      summary: Delete a budget
+      operationId: delete_budget_api_v1_budgets__budget_id__delete
+      parameters:
+      - name: budget_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Budget Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/policies:
+    get:
+      tags:
+      - policies
+      summary: List waste-prevention policies
+      operationId: list_rules_api_v1_policies_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RuleOut'
+                type: array
+                title: Response List Rules Api V1 Policies Get
+    post:
+      tags:
+      - policies
+      summary: Create a policy
+      operationId: create_rule_api_v1_policies_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/policies/{rule_id}:
+    patch:
+      tags:
+      - policies
+      summary: Update a policy
+      operationId: update_rule_api_v1_policies__rule_id__patch
+      parameters:
+      - name: rule_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Rule Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - policies
+      summary: Delete a policy
+      operationId: delete_rule_api_v1_policies__rule_id__delete
+      parameters:
+      - name: rule_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Rule Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/cache/stats:
+    get:
+      tags:
+      - cache
+      summary: Cache totals
+      operationId: stats_api_v1_cache_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CacheStats'
+  /api/v1/cache/entries:
+    get:
+      tags:
+      - cache
+      summary: Most valuable cache entries
+      operationId: entries_api_v1_cache_entries_get
+      parameters:
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CacheEntryOut'
+                title: Response Entries Api V1 Cache Entries Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/cache/entries/{key_hash}:
+    delete:
+      tags:
+      - cache
+      summary: Invalidate one entry
+      operationId: invalidate_api_v1_cache_entries__key_hash__delete
+      parameters:
+      - name: key_hash
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Key Hash
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/cache/purge:
+    post:
+      tags:
+      - cache
+      summary: Invalidate all entries (or one project's)
+      operationId: purge_api_v1_cache_purge_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurgeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/usage/events:
+    get:
+      tags:
+      - usage and analytics
+      summary: Request log
+      operationId: list_events_api_v1_usage_events_get
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      - name: api_key_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Api Key Id
+      - name: model
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - name: cache_status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cache Status
+      - name: end_user
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End User
+      - name: task_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          description: Request id prefix
+          title: Q
+        description: Request id prefix
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_UsageEventOut_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/usage/events/{request_id}:
+    get:
+      tags:
+      - usage and analytics
+      summary: One request with its budget reservations and reconciliations
+      operationId: get_event_api_v1_usage_events__request_id__get
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Request Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageEventDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/analytics/overview:
+    get:
+      tags:
+      - usage and analytics
+      summary: Totals vs previous period
+      operationId: overview_api_v1_analytics_overview_get
+      parameters:
+      - name: range
+        in: query
+        required: false
+        schema:
+          enum:
+          - 1h
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          type: string
+          default: 24h
+          title: Range
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/analytics/timeseries:
+    get:
+      tags:
+      - usage and analytics
+      summary: Spend over time
+      operationId: timeseries_api_v1_analytics_timeseries_get
+      parameters:
+      - name: range
+        in: query
+        required: false
+        schema:
+          enum:
+          - 1h
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          type: string
+          default: 24h
+          title: Range
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeriesPoint'
+                title: Response Timeseries Api V1 Analytics Timeseries Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/analytics/breakdown:
+    get:
+      tags:
+      - usage and analytics
+      summary: Spend by dimension
+      operationId: breakdown_api_v1_analytics_breakdown_get
+      parameters:
+      - name: by
+        in: query
+        required: false
+        schema:
+          enum:
+          - model
+          - provider
+          - project
+          - api_key
+          - status
+          - cache_status
+          type: string
+          default: model
+          title: By
+      - name: range
+        in: query
+        required: false
+        schema:
+          enum:
+          - 1h
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          type: string
+          default: 24h
+          title: Range
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BreakdownRow'
+                title: Response Breakdown Api V1 Analytics Breakdown Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/analytics/tasks:
+    get:
+      tags:
+      - usage and analytics
+      summary: Agent tasks
+      operationId: tasks_api_v1_analytics_tasks_get
+      parameters:
+      - name: range
+        in: query
+        required: false
+        schema:
+          enum:
+          - 1h
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          type: string
+          default: 24h
+          title: Range
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskSummary'
+                title: Response Tasks Api V1 Analytics Tasks Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/exports:
+    get:
+      tags:
+      - usage and analytics
+      summary: Recent report exports
+      operationId: list_exports_api_v1_exports_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExportOut'
+                type: array
+                title: Response List Exports Api V1 Exports Get
+    post:
+      tags:
+      - usage and analytics
+      summary: Export usage as CSV
+      operationId: create_export_api_v1_exports_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/exports/{export_id}/download:
+    get:
+      tags:
+      - usage and analytics
+      summary: Get a download link for an export
+      operationId: export_link_api_v1_exports__export_id__download_get
+      parameters:
+      - name: export_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Export Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportDownload'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/exports/{export_id}/file:
+    get:
+      tags:
+      - usage and analytics
+      summary: Stream an export through the API
+      operationId: export_file_api_v1_exports__export_id__file_get
+      parameters:
+      - name: export_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Export Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/alerts:
+    get:
+      tags:
+      - alerts
+      summary: Budget and policy alerts
+      operationId: list_alerts_api_v1_alerts_get
+      parameters:
+      - name: include_acknowledged
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Include Acknowledged
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertList'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/alerts/{alert_id}/ack:
+    post:
+      tags:
+      - alerts
+      summary: Acknowledge an alert
+      operationId: ack_api_v1_alerts__alert_id__ack_post
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Alert Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/alerts/ack-all:
+    post:
+      tags:
+      - alerts
+      summary: Acknowledge every open alert
+      operationId: ack_all_api_v1_alerts_ack_all_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+  /api/v1/audit:
+    get:
+      tags:
+      - audit
+      summary: Append-only audit log
+      operationId: list_audit_api_v1_audit_get
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: action
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_AuditOut_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/playground/chat:
+    post:
+      tags:
+      - playground
+      summary: Run a chat completion through the gateway
+      operationId: chat_api_v1_playground_chat_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaygroundRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /healthz:
+    get:
+      tags:
+      - system
+      summary: Liveness
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Healthz Healthz Get
+  /readyz:
+    get:
+      tags:
+      - system
+      summary: 'Readiness: Postgres and Redis reachable'
+      operationId: readyz_readyz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Readyz Readyz Get
+  /api/v1/system:
+    get:
+      tags:
+      - system
+      summary: Deployment configuration
+      operationId: system_api_v1_system_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemInfo'
+components:
+  schemas:
+    AlertList:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AlertOut'
+          type: array
+          title: Items
+        unacknowledged:
+          type: integer
+          title: Unacknowledged
+      type: object
+      required:
+      - items
+      - unacknowledged
+      title: AlertList
+    AlertOut:
+      properties:
+        id:
+          type: integer
+          title: Id
+        kind:
+          type: string
+          title: Kind
+        severity:
+          type: string
+          title: Severity
+        message:
+          type: string
+          title: Message
+        acknowledged:
+          type: boolean
+          title: Acknowledged
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - kind
+      - severity
+      - message
+      - acknowledged
+      - created_at
+      title: AlertOut
+    AuditOut:
+      properties:
+        id:
+          type: integer
+          title: Id
+        at:
+          type: string
+          format: date-time
+          title: At
+        actor_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Actor Id
+        actor_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Actor Email
+        action:
+          type: string
+          title: Action
+        target_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target Type
+        target_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target Id
+        details:
+          additionalProperties: true
+          type: object
+          title: Details
+        ip:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ip
+      type: object
+      required:
+      - id
+      - at
+      - actor_id
+      - actor_email
+      - action
+      - target_type
+      - target_id
+      - details
+      - ip
+      title: AuditOut
+    BreakdownRow:
+      properties:
+        key:
+          type: string
+          title: Key
+        label:
+          type: string
+          title: Label
+        requests:
+          type: integer
+          title: Requests
+        cost_usd:
+          type: number
+          title: Cost Usd
+        avoided_usd:
+          type: number
+          title: Avoided Usd
+        input_tokens:
+          type: integer
+          title: Input Tokens
+        output_tokens:
+          type: integer
+          title: Output Tokens
+        share:
+          type: number
+          title: Share
+      type: object
+      required:
+      - key
+      - label
+      - requests
+      - cost_usd
+      - avoided_usd
+      - input_tokens
+      - output_tokens
+      - share
+      title: BreakdownRow
+    BudgetIn:
+      properties:
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Name
+        scope_type:
+          type: string
+          enum:
+          - global
+          - team
+          - project
+          - api_key
+          - end_user
+          - model
+          title: Scope Type
+        scope_id:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Scope Id
+          description: Team/project/key id, end-user id ('*' = each user separately), or model alias
+        period:
+          type: string
+          enum:
+          - daily
+          - weekly
+          - monthly
+          - total
+          title: Period
+        limit_usd:
+          anyOf:
+          - type: number
+            maximum: 10000000.0
+            exclusiveMinimum: 0.0
+          - type: string
+          title: Limit Usd
+        mode:
+          type: string
+          enum:
+          - hard
+          - soft
+          title: Mode
+          default: hard
+        alert_threshold_pct:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Alert Threshold Pct
+          default: 80
+        enabled:
+          type: boolean
+          title: Enabled
+          default: true
+      type: object
+      required:
+      - name
+      - scope_type
+      - period
+      - limit_usd
+      title: BudgetIn
+    BudgetOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        scope_type:
+          type: string
+          title: Scope Type
+        scope_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scope Id
+        scope_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scope Label
+        period:
+          type: string
+          title: Period
+        limit_usd:
+          type: number
+          title: Limit Usd
+        mode:
+          type: string
+          title: Mode
+        alert_threshold_pct:
+          type: integer
+          title: Alert Threshold Pct
+        enabled:
+          type: boolean
+          title: Enabled
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        window_start:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Window Start
+        window_end:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Window End
+        spent_usd:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Spent Usd
+          description: Settled spend plus in-flight reservations in the current window
+        used_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Used Pct
+      type: object
+      required:
+      - id
+      - name
+      - scope_type
+      - scope_id
+      - period
+      - limit_usd
+      - mode
+      - alert_threshold_pct
+      - enabled
+      - created_at
+      title: BudgetOut
+    BudgetUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
+          title: Name
+        limit_usd:
+          anyOf:
+          - type: number
+            maximum: 10000000.0
+            exclusiveMinimum: 0.0
+          - type: string
+          - type: 'null'
+          title: Limit Usd
+        mode:
+          anyOf:
+          - type: string
+            enum:
+            - hard
+            - soft
+          - type: 'null'
+          title: Mode
+        alert_threshold_pct:
+          anyOf:
+          - type: integer
+            maximum: 100.0
+            minimum: 1.0
+          - type: 'null'
+          title: Alert Threshold Pct
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+      type: object
+      title: BudgetUpdate
+    CacheEntryOut:
+      properties:
+        key_hash:
+          type: string
+          title: Key Hash
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+        project_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Name
+        model_alias:
+          type: string
+          title: Model Alias
+        kind:
+          type: string
+          title: Kind
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        expires_at:
+          type: string
+          format: date-time
+          title: Expires At
+        hits:
+          type: integer
+          title: Hits
+        last_hit_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Hit At
+        tokens_saved:
+          type: integer
+          title: Tokens Saved
+        avoided_cost_usd:
+          type: number
+          title: Avoided Cost Usd
+        prompt_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Excerpt
+        active:
+          type: boolean
+          title: Active
+          default: true
+      type: object
+      required:
+      - key_hash
+      - project_id
+      - model_alias
+      - kind
+      - created_at
+      - expires_at
+      - hits
+      - last_hit_at
+      - tokens_saved
+      - avoided_cost_usd
+      - prompt_excerpt
+      title: CacheEntryOut
+    CacheStats:
+      properties:
+        entries_active:
+          type: integer
+          title: Entries Active
+        entries_total:
+          type: integer
+          title: Entries Total
+        hits_total:
+          type: integer
+          title: Hits Total
+        tokens_saved:
+          type: integer
+          title: Tokens Saved
+        avoided_cost_usd:
+          type: number
+          title: Avoided Cost Usd
+      type: object
+      required:
+      - entries_active
+      - entries_total
+      - hits_total
+      - tokens_saved
+      - avoided_cost_usd
+      title: CacheStats
+    ExportDownload:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+          description: Presigned URL when storage supports it
+        filename:
+          type: string
+          title: Filename
+      type: object
+      required:
+      - filename
+      title: ExportDownload
+    ExportIn:
+      properties:
+        range:
+          type: string
+          enum:
+          - 1h
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          title: Range
+          default: 30d
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      type: object
+      title: ExportIn
+    ExportOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        kind:
+          type: string
+          title: Kind
+        params:
+          additionalProperties: true
+          type: object
+          title: Params
+        status:
+          type: string
+          title: Status
+        rows:
+          type: integer
+          title: Rows
+        bytes:
+          type: integer
+          title: Bytes
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - kind
+      - params
+      - status
+      - rows
+      - bytes
+      - created_at
+      title: ExportOut
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    KeyCreated:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        project_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Name
+        name:
+          type: string
+          title: Name
+        prefix:
+          type: string
+          title: Prefix
+        display:
+          type: string
+          title: Display
+          description: 'Safe identifier: tsk_<prefix>_****'
+        rpm_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rpm Limit
+        tpm_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Tpm Limit
+        concurrency_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Concurrency Limit
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+        revoked_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Revoked At
+        last_used_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Used At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        key:
+          type: string
+          title: Key
+          description: The full key. Shown once; store it now
+      type: object
+      required:
+      - id
+      - project_id
+      - name
+      - prefix
+      - display
+      - rpm_limit
+      - tpm_limit
+      - concurrency_limit
+      - expires_at
+      - revoked_at
+      - last_used_at
+      - created_at
+      - key
+      title: KeyCreated
+    KeyIn:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Name
+        rpm_limit:
+          anyOf:
+          - type: integer
+            maximum: 1000000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Rpm Limit
+        tpm_limit:
+          anyOf:
+          - type: integer
+            maximum: 1000000000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Tpm Limit
+        concurrency_limit:
+          anyOf:
+          - type: integer
+            maximum: 10000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Concurrency Limit
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+      type: object
+      required:
+      - project_id
+      - name
+      title: KeyIn
+    KeyOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        project_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Name
+        name:
+          type: string
+          title: Name
+        prefix:
+          type: string
+          title: Prefix
+        display:
+          type: string
+          title: Display
+          description: 'Safe identifier: tsk_<prefix>_****'
+        rpm_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rpm Limit
+        tpm_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Tpm Limit
+        concurrency_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Concurrency Limit
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+        revoked_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Revoked At
+        last_used_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Used At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - project_id
+      - name
+      - prefix
+      - display
+      - rpm_limit
+      - tpm_limit
+      - concurrency_limit
+      - expires_at
+      - revoked_at
+      - last_used_at
+      - created_at
+      title: KeyOut
+    KeyUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
+          title: Name
+        rpm_limit:
+          anyOf:
+          - type: integer
+            maximum: 1000000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Rpm Limit
+        tpm_limit:
+          anyOf:
+          - type: integer
+            maximum: 1000000000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Tpm Limit
+        concurrency_limit:
+          anyOf:
+          - type: integer
+            maximum: 10000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Concurrency Limit
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+      type: object
+      title: KeyUpdate
+    LoginRequest:
+      properties:
+        email:
+          type: string
+          maxLength: 320
+          pattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+          title: Email
+        password:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: Password
+      type: object
+      required:
+      - email
+      - password
+      title: LoginRequest
+    Message:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+          default: true
+        message:
+          type: string
+          title: Message
+          default: ''
+      type: object
+      title: Message
+    ModelIn:
+      properties:
+        alias:
+          type: string
+          maxLength: 120
+          minLength: 1
+          pattern: ^[A-Za-z0-9._:/-]+$
+          title: Alias
+        provider_id:
+          type: string
+          format: uuid
+          title: Provider Id
+        upstream_model:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Upstream Model
+        kind:
+          type: string
+          enum:
+          - chat
+          - embedding
+          title: Kind
+          default: chat
+        tokenizer:
+          type: string
+          maxLength: 32
+          title: Tokenizer
+          default: o200k_base
+        context_window:
+          type: integer
+          maximum: 10000000.0
+          minimum: 256.0
+          title: Context Window
+          default: 128000
+        max_output_tokens:
+          type: integer
+          maximum: 1000000.0
+          minimum: 1.0
+          title: Max Output Tokens
+          default: 16384
+        restricted:
+          type: boolean
+          title: Restricted
+          default: false
+        enabled:
+          type: boolean
+          title: Enabled
+          default: true
+        price:
+          anyOf:
+          - $ref: '#/components/schemas/PriceIn'
+          - type: 'null'
+      type: object
+      required:
+      - alias
+      - provider_id
+      - upstream_model
+      title: ModelIn
+    ModelOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        alias:
+          type: string
+          title: Alias
+        provider_id:
+          type: string
+          format: uuid
+          title: Provider Id
+        provider_name:
+          type: string
+          title: Provider Name
+        provider_kind:
+          type: string
+          title: Provider Kind
+        upstream_model:
+          type: string
+          title: Upstream Model
+        kind:
+          type: string
+          title: Kind
+        tokenizer:
+          type: string
+          title: Tokenizer
+        context_window:
+          type: integer
+          title: Context Window
+        max_output_tokens:
+          type: integer
+          title: Max Output Tokens
+        restricted:
+          type: boolean
+          title: Restricted
+        enabled:
+          type: boolean
+          title: Enabled
+        price:
+          anyOf:
+          - $ref: '#/components/schemas/PriceOut'
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - alias
+      - provider_id
+      - provider_name
+      - provider_kind
+      - upstream_model
+      - kind
+      - tokenizer
+      - context_window
+      - max_output_tokens
+      - restricted
+      - enabled
+      - price
+      - created_at
+      title: ModelOut
+    ModelUpdate:
+      properties:
+        upstream_model:
+          anyOf:
+          - type: string
+            maxLength: 200
+            minLength: 1
+          - type: 'null'
+          title: Upstream Model
+        tokenizer:
+          anyOf:
+          - type: string
+            maxLength: 32
+          - type: 'null'
+          title: Tokenizer
+        context_window:
+          anyOf:
+          - type: integer
+            maximum: 10000000.0
+            minimum: 256.0
+          - type: 'null'
+          title: Context Window
+        max_output_tokens:
+          anyOf:
+          - type: integer
+            maximum: 1000000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Max Output Tokens
+        restricted:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Restricted
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+      type: object
+      title: ModelUpdate
+    Overview:
+      properties:
+        range:
+          type: string
+          title: Range
+        since:
+          type: string
+          format: date-time
+          title: Since
+        totals:
+          $ref: '#/components/schemas/Totals'
+        previous:
+          $ref: '#/components/schemas/Totals'
+      type: object
+      required:
+      - range
+      - since
+      - totals
+      - previous
+      title: Overview
+    Page_AuditOut_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AuditOut'
+          type: array
+          title: Items
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Pass as ?cursor= to fetch the next page
+      type: object
+      required:
+      - items
+      title: Page[AuditOut]
+    Page_UsageEventOut_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/UsageEventOut'
+          type: array
+          title: Items
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Pass as ?cursor= to fetch the next page
+      type: object
+      required:
+      - items
+      title: Page[UsageEventOut]
+    PasswordChange:
+      properties:
+        current_password:
+          type: string
+          maxLength: 256
+          minLength: 1
+          title: Current Password
+        new_password:
+          type: string
+          maxLength: 256
+          minLength: 10
+          title: New Password
+      type: object
+      required:
+      - current_password
+      - new_password
+      title: PasswordChange
+    PlaygroundMessage:
+      properties:
+        role:
+          type: string
+          enum:
+          - system
+          - user
+          - assistant
+          title: Role
+        content:
+          type: string
+          maxLength: 200000
+          title: Content
+      type: object
+      required:
+      - role
+      - content
+      title: PlaygroundMessage
+    PlaygroundRequest:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+        model:
+          type: string
+          title: Model
+        messages:
+          items:
+            $ref: '#/components/schemas/PlaygroundMessage'
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Messages
+        temperature:
+          anyOf:
+          - type: number
+            maximum: 2.0
+            minimum: 0.0
+          - type: 'null'
+          title: Temperature
+          default: 0
+        max_tokens:
+          anyOf:
+          - type: integer
+            maximum: 1000000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Max Tokens
+        end_user:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: End User
+        task_id:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Task Id
+        cache:
+          type: string
+          enum:
+          - 'on'
+          - 'off'
+          title: Cache
+          default: 'on'
+      type: object
+      required:
+      - project_id
+      - model
+      - messages
+      title: PlaygroundRequest
+    PriceIn:
+      properties:
+        input_per_m:
+          anyOf:
+          - type: number
+            maximum: 100000.0
+            minimum: 0.0
+          - type: string
+          title: Input Per M
+          description: USD per 1M input tokens
+        cached_input_per_m:
+          anyOf:
+          - type: number
+            maximum: 100000.0
+            minimum: 0.0
+          - type: string
+          - type: 'null'
+          title: Cached Input Per M
+        output_per_m:
+          anyOf:
+          - type: number
+            maximum: 100000.0
+            minimum: 0.0
+          - type: string
+          title: Output Per M
+          description: USD per 1M output tokens
+        note:
+          type: string
+          maxLength: 500
+          title: Note
+          default: ''
+      type: object
+      required:
+      - input_per_m
+      - output_per_m
+      title: PriceIn
+    PriceOut:
+      properties:
+        id:
+          type: integer
+          title: Id
+        version:
+          type: integer
+          title: Version
+        input_per_m:
+          type: string
+          title: Input Per M
+        cached_input_per_m:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cached Input Per M
+        output_per_m:
+          type: string
+          title: Output Per M
+        effective_from:
+          type: string
+          format: date-time
+          title: Effective From
+        note:
+          type: string
+          title: Note
+      type: object
+      required:
+      - id
+      - version
+      - input_per_m
+      - cached_input_per_m
+      - output_per_m
+      - effective_from
+      - note
+      title: PriceOut
+    ProjectIn:
+      properties:
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Name
+        description:
+          type: string
+          maxLength: 2000
+          title: Description
+          default: ''
+        team_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Team Id
+        cache_enabled:
+          type: boolean
+          title: Cache Enabled
+          default: true
+        cache_ttl_s:
+          type: integer
+          maximum: 2592000.0
+          minimum: 10.0
+          title: Cache Ttl S
+          default: 3600
+        cache_nondeterministic:
+          type: boolean
+          title: Cache Nondeterministic
+          default: false
+        semantic_cache_enabled:
+          type: boolean
+          title: Semantic Cache Enabled
+          default: false
+        allowed_models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Allowed Models
+          description: Model aliases this project may use; null allows every unrestricted model
+      type: object
+      required:
+      - name
+      title: ProjectIn
+    ProjectOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        slug:
+          type: string
+          title: Slug
+        description:
+          type: string
+          title: Description
+        team_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Team Id
+        team_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Team Name
+        cache_enabled:
+          type: boolean
+          title: Cache Enabled
+        cache_ttl_s:
+          type: integer
+          title: Cache Ttl S
+        cache_nondeterministic:
+          type: boolean
+          title: Cache Nondeterministic
+        semantic_cache_enabled:
+          type: boolean
+          title: Semantic Cache Enabled
+        allowed_models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Allowed Models
+        archived:
+          type: boolean
+          title: Archived
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        key_count:
+          type: integer
+          title: Key Count
+          default: 0
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - description
+      - team_id
+      - cache_enabled
+      - cache_ttl_s
+      - cache_nondeterministic
+      - semantic_cache_enabled
+      - allowed_models
+      - archived
+      - created_at
+      title: ProjectOut
+    ProjectUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Description
+        team_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Team Id
+        cache_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Cache Enabled
+        cache_ttl_s:
+          anyOf:
+          - type: integer
+            maximum: 2592000.0
+            minimum: 10.0
+          - type: 'null'
+          title: Cache Ttl S
+        cache_nondeterministic:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Cache Nondeterministic
+        semantic_cache_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Semantic Cache Enabled
+        allowed_models:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Allowed Models
+        archived:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Archived
+      type: object
+      title: ProjectUpdate
+    ProviderIn:
+      properties:
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Name
+        kind:
+          type: string
+          enum:
+          - openai
+          - anthropic
+          title: Kind
+        base_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Base Url
+        api_key:
+          anyOf:
+          - type: string
+            maxLength: 4096
+          - type: 'null'
+          title: Api Key
+          description: Write-only; sealed at rest
+        timeout_s:
+          anyOf:
+          - type: number
+            maximum: 600.0
+            exclusiveMinimum: 0.0
+          - type: 'null'
+          title: Timeout S
+        enabled:
+          type: boolean
+          title: Enabled
+          default: true
+      type: object
+      required:
+      - name
+      - kind
+      - base_url
+      title: ProviderIn
+    ProviderOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        kind:
+          type: string
+          title: Kind
+        base_url:
+          type: string
+          title: Base Url
+        has_key:
+          type: boolean
+          title: Has Key
+        key_hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Key Hint
+        timeout_s:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Timeout S
+        enabled:
+          type: boolean
+          title: Enabled
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        model_count:
+          type: integer
+          title: Model Count
+          default: 0
+      type: object
+      required:
+      - id
+      - name
+      - kind
+      - base_url
+      - has_key
+      - key_hint
+      - timeout_s
+      - enabled
+      - created_at
+      title: ProviderOut
+    ProviderTest:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+        latency_ms:
+          type: integer
+          title: Latency Ms
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - ok
+      - latency_ms
+      - message
+      title: ProviderTest
+    ProviderUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
+          title: Name
+        base_url:
+          anyOf:
+          - type: string
+            maxLength: 2083
+            minLength: 1
+            format: uri
+          - type: 'null'
+          title: Base Url
+        api_key:
+          anyOf:
+          - type: string
+            maxLength: 4096
+          - type: 'null'
+          title: Api Key
+          description: Empty string clears the key
+        timeout_s:
+          anyOf:
+          - type: number
+            maximum: 600.0
+            exclusiveMinimum: 0.0
+          - type: 'null'
+          title: Timeout S
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+      type: object
+      title: ProviderUpdate
+    PurgeRequest:
+      properties:
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+      type: object
+      title: PurgeRequest
+    ReconciliationOut:
+      properties:
+        delta_cost_usd:
+          type: number
+          title: Delta Cost Usd
+        reason:
+          type: string
+          title: Reason
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - delta_cost_usd
+      - reason
+      - created_at
+      title: ReconciliationOut
+    ReservationOut:
+      properties:
+        budget_id:
+          type: string
+          format: uuid
+          title: Budget Id
+        budget_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Budget Name
+        amount_usd:
+          type: number
+          title: Amount Usd
+        actual_usd:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Actual Usd
+        status:
+          type: string
+          title: Status
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        settled_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Settled At
+      type: object
+      required:
+      - budget_id
+      - amount_usd
+      - status
+      - created_at
+      - settled_at
+      title: ReservationOut
+    RuleIn:
+      properties:
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Name
+        kind:
+          type: string
+          enum:
+          - max_input_tokens
+          - max_output_tokens
+          - restricted_model
+          - prompt_injection
+          - retry_storm
+          - agent_task
+          title: Kind
+        scope_type:
+          type: string
+          enum:
+          - global
+          - team
+          - project
+          - api_key
+          - model
+          title: Scope Type
+          default: global
+        scope_id:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Scope Id
+        params:
+          additionalProperties: true
+          type: object
+          title: Params
+        action:
+          type: string
+          enum:
+          - reject
+          - cap
+          - throttle
+          - alert
+          title: Action
+          default: reject
+        enabled:
+          type: boolean
+          title: Enabled
+          default: true
+      type: object
+      required:
+      - name
+      - kind
+      title: RuleIn
+    RuleOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        kind:
+          type: string
+          title: Kind
+        scope_type:
+          type: string
+          title: Scope Type
+        scope_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scope Id
+        params:
+          additionalProperties: true
+          type: object
+          title: Params
+        action:
+          type: string
+          title: Action
+        enabled:
+          type: boolean
+          title: Enabled
+        triggered_count:
+          type: integer
+          title: Triggered Count
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - name
+      - kind
+      - scope_type
+      - scope_id
+      - params
+      - action
+      - enabled
+      - triggered_count
+      - created_at
+      title: RuleOut
+    RuleUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
+          title: Name
+        params:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Params
+        action:
+          anyOf:
+          - type: string
+            enum:
+            - reject
+            - cap
+            - throttle
+            - alert
+          - type: 'null'
+          title: Action
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+      type: object
+      title: RuleUpdate
+    SeriesPoint:
+      properties:
+        t:
+          type: string
+          format: date-time
+          title: T
+        requests:
+          type: integer
+          title: Requests
+        cost_usd:
+          type: number
+          title: Cost Usd
+        avoided_usd:
+          type: number
+          title: Avoided Usd
+        input_tokens:
+          type: integer
+          title: Input Tokens
+        output_tokens:
+          type: integer
+          title: Output Tokens
+        rejected:
+          type: integer
+          title: Rejected
+        cache_hits:
+          type: integer
+          title: Cache Hits
+      type: object
+      required:
+      - t
+      - requests
+      - cost_usd
+      - avoided_usd
+      - input_tokens
+      - output_tokens
+      - rejected
+      - cache_hits
+      title: SeriesPoint
+    SessionOut:
+      properties:
+        user:
+          $ref: '#/components/schemas/UserOut'
+        session_token:
+          type: string
+          title: Session Token
+          description: Bearer token for API clients; browsers use the cookie
+        expires_in_s:
+          type: integer
+          title: Expires In S
+      type: object
+      required:
+      - user
+      - session_token
+      - expires_in_s
+      title: SessionOut
+    SystemInfo:
+      properties:
+        version:
+          type: string
+          title: Version
+        environment:
+          type: string
+          title: Environment
+        cloud:
+          type: string
+          title: Cloud
+        key_mode:
+          type: string
+          title: Key Mode
+        storage:
+          type: string
+          title: Storage
+        budget_failure_mode:
+          type: string
+          title: Budget Failure Mode
+        semantic_cache:
+          type: boolean
+          title: Semantic Cache
+        store_content:
+          type: boolean
+          title: Store Content
+        projects:
+          type: integer
+          title: Projects
+        models:
+          type: integer
+          title: Models
+        active_keys:
+          type: integer
+          title: Active Keys
+        checks:
+          additionalProperties: true
+          type: object
+          title: Checks
+      type: object
+      required:
+      - version
+      - environment
+      - cloud
+      - key_mode
+      - storage
+      - budget_failure_mode
+      - semantic_cache
+      - store_content
+      - projects
+      - models
+      - active_keys
+      - checks
+      title: SystemInfo
+    TaskSummary:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        project_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Name
+        calls:
+          type: integer
+          title: Calls
+        cost_usd:
+          type: number
+          title: Cost Usd
+        rejected:
+          type: integer
+          title: Rejected
+        first_at:
+          type: string
+          format: date-time
+          title: First At
+        last_at:
+          type: string
+          format: date-time
+          title: Last At
+        last_rule:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Rule
+      type: object
+      required:
+      - task_id
+      - project_name
+      - calls
+      - cost_usd
+      - rejected
+      - first_at
+      - last_at
+      - last_rule
+      title: TaskSummary
+    TeamIn:
+      properties:
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Name
+        description:
+          type: string
+          maxLength: 2000
+          title: Description
+          default: ''
+      type: object
+      required:
+      - name
+      title: TeamIn
+    TeamOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        slug:
+          type: string
+          title: Slug
+        description:
+          type: string
+          title: Description
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        project_count:
+          type: integer
+          title: Project Count
+          default: 0
+      type: object
+      required:
+      - id
+      - name
+      - slug
+      - description
+      - created_at
+      title: TeamOut
+    TeamUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 120
+            minLength: 1
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Description
+      type: object
+      title: TeamUpdate
+    Totals:
+      properties:
+        requests:
+          type: integer
+          title: Requests
+          default: 0
+        succeeded:
+          type: integer
+          title: Succeeded
+          default: 0
+        rejected:
+          type: integer
+          title: Rejected
+          default: 0
+        errors:
+          type: integer
+          title: Errors
+          default: 0
+        uncertain:
+          type: integer
+          title: Uncertain
+          default: 0
+        cache_hits:
+          type: integer
+          title: Cache Hits
+          default: 0
+        input_tokens:
+          type: integer
+          title: Input Tokens
+          default: 0
+        cached_input_tokens:
+          type: integer
+          title: Cached Input Tokens
+          default: 0
+        output_tokens:
+          type: integer
+          title: Output Tokens
+          default: 0
+        cost_usd:
+          type: number
+          title: Cost Usd
+          default: 0
+        avoided_usd:
+          type: number
+          title: Avoided Usd
+          default: 0
+        avg_latency_ms:
+          type: number
+          title: Avg Latency Ms
+          default: 0
+        cache_hit_rate:
+          type: number
+          title: Cache Hit Rate
+          default: 0
+      type: object
+      title: Totals
+    UsageEventDetail:
+      properties:
+        id:
+          type: integer
+          title: Id
+        request_id:
+          type: string
+          title: Request Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+        project_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Name
+        api_key_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Api Key Id
+        api_key_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Api Key Name
+        source:
+          type: string
+          title: Source
+        end_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End User
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+        endpoint:
+          type: string
+          title: Endpoint
+        model_alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model Alias
+        provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provider
+        upstream_model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Upstream Model
+        input_tokens:
+          type: integer
+          title: Input Tokens
+        cached_input_tokens:
+          type: integer
+          title: Cached Input Tokens
+        output_tokens:
+          type: integer
+          title: Output Tokens
+        estimated_input_tokens:
+          type: integer
+          title: Estimated Input Tokens
+        usage_source:
+          type: string
+          title: Usage Source
+        estimated_cost_usd:
+          type: number
+          title: Estimated Cost Usd
+        actual_cost_usd:
+          type: number
+          title: Actual Cost Usd
+        avoided_cost_usd:
+          type: number
+          title: Avoided Cost Usd
+        price_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Price Id
+        priced:
+          type: boolean
+          title: Priced
+        cache_status:
+          type: string
+          title: Cache Status
+        status:
+          type: string
+          title: Status
+        rule:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rule
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        http_status:
+          type: integer
+          title: Http Status
+        latency_ms:
+          type: integer
+          title: Latency Ms
+        stream:
+          type: boolean
+          title: Stream
+        prompt_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Excerpt
+        reservations:
+          items:
+            $ref: '#/components/schemas/ReservationOut'
+          type: array
+          title: Reservations
+          default: []
+        reconciliations:
+          items:
+            $ref: '#/components/schemas/ReconciliationOut'
+          type: array
+          title: Reconciliations
+          default: []
+        price_version:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Price Version
+      type: object
+      required:
+      - id
+      - request_id
+      - created_at
+      - project_id
+      - api_key_id
+      - source
+      - end_user
+      - task_id
+      - endpoint
+      - model_alias
+      - provider
+      - upstream_model
+      - input_tokens
+      - cached_input_tokens
+      - output_tokens
+      - estimated_input_tokens
+      - usage_source
+      - estimated_cost_usd
+      - actual_cost_usd
+      - avoided_cost_usd
+      - price_id
+      - priced
+      - cache_status
+      - status
+      - rule
+      - reason
+      - http_status
+      - latency_ms
+      - stream
+      - prompt_excerpt
+      title: UsageEventDetail
+    UsageEventOut:
+      properties:
+        id:
+          type: integer
+          title: Id
+        request_id:
+          type: string
+          title: Request Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Project Id
+        project_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Project Name
+        api_key_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Api Key Id
+        api_key_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Api Key Name
+        source:
+          type: string
+          title: Source
+        end_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End User
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+        endpoint:
+          type: string
+          title: Endpoint
+        model_alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model Alias
+        provider:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provider
+        upstream_model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Upstream Model
+        input_tokens:
+          type: integer
+          title: Input Tokens
+        cached_input_tokens:
+          type: integer
+          title: Cached Input Tokens
+        output_tokens:
+          type: integer
+          title: Output Tokens
+        estimated_input_tokens:
+          type: integer
+          title: Estimated Input Tokens
+        usage_source:
+          type: string
+          title: Usage Source
+        estimated_cost_usd:
+          type: number
+          title: Estimated Cost Usd
+        actual_cost_usd:
+          type: number
+          title: Actual Cost Usd
+        avoided_cost_usd:
+          type: number
+          title: Avoided Cost Usd
+        price_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Price Id
+        priced:
+          type: boolean
+          title: Priced
+        cache_status:
+          type: string
+          title: Cache Status
+        status:
+          type: string
+          title: Status
+        rule:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rule
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        http_status:
+          type: integer
+          title: Http Status
+        latency_ms:
+          type: integer
+          title: Latency Ms
+        stream:
+          type: boolean
+          title: Stream
+        prompt_excerpt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt Excerpt
+      type: object
+      required:
+      - id
+      - request_id
+      - created_at
+      - project_id
+      - api_key_id
+      - source
+      - end_user
+      - task_id
+      - endpoint
+      - model_alias
+      - provider
+      - upstream_model
+      - input_tokens
+      - cached_input_tokens
+      - output_tokens
+      - estimated_input_tokens
+      - usage_source
+      - estimated_cost_usd
+      - actual_cost_usd
+      - avoided_cost_usd
+      - price_id
+      - priced
+      - cache_status
+      - status
+      - rule
+      - reason
+      - http_status
+      - latency_ms
+      - stream
+      - prompt_excerpt
+      title: UsageEventOut
+    UserCreate:
+      properties:
+        email:
+          type: string
+          maxLength: 320
+          pattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+          title: Email
+        name:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Name
+        role:
+          type: string
+          enum:
+          - owner
+          - admin
+          - viewer
+          title: Role
+          default: viewer
+        password:
+          type: string
+          maxLength: 256
+          minLength: 10
+          title: Password
+      type: object
+      required:
+      - email
+      - name
+      - password
+      title: UserCreate
+    UserOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        email:
+          type: string
+          title: Email
+        name:
+          type: string
+          title: Name
+        role:
+          type: string
+          title: Role
+        disabled:
+          type: boolean
+          title: Disabled
+        last_login_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Login At
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - email
+      - name
+      - role
+      - disabled
+      - last_login_at
+      - created_at
+      title: UserOut
+    UserUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 200
+            minLength: 1
+          - type: 'null'
+          title: Name
+        role:
+          anyOf:
+          - type: string
+            enum:
+            - owner
+            - admin
+            - viewer
+          - type: 'null'
+          title: Role
+        disabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Disabled
+      type: object
+      title: UserUpdate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+servers:
+- url: http://localhost:4130
+  description: Local (make up)

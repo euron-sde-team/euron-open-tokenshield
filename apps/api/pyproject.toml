@@ -1,0 +1,98 @@
+[project]
+name = "tokenshield"
+version = "0.1.0"
+description = "Euron TokenShield: a self-hosted AI gateway that tracks tokens, enforces hard budgets, caches responses and blocks wasteful LLM requests."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.32",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.6",
+  "sqlalchemy[asyncio]>=2.0.36",
+  "asyncpg>=0.30",
+  "alembic>=1.14",
+  "redis>=5.2",
+  "httpx>=0.28",
+  "tiktoken>=0.8",
+  "argon2-cffi>=23.1",
+  "pyjwt>=2.10",
+  "boto3>=1.35",
+  "prometheus-client>=0.21",
+  "pgvector>=0.3.6",
+  "opentelemetry-api>=1.28",
+  "opentelemetry-sdk>=1.28",
+  "cryptography>=43",
+  "orjson>=3.10",
+]
+
+[project.scripts]
+tokenshield = "tokenshield.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "pytest-cov>=6.0",
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "boto3-stubs[s3,kms,secretsmanager]>=1.35",
+  "asgi-lifespan>=2.1",
+  "pyyaml>=6.0",
+  "types-pyyaml>=6.0",
+  "openai>=1.55",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tokenshield", "src/mockllm"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "S", "A", "C4", "SIM", "RUF", "ASYNC", "PT"]
+ignore = ["S101", "B008", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S311", "E501", "PT018", "PT022", "PT011", "S110"]
+"src/tokenshield/migrations/**" = ["E501", "UP", "I"]
+"src/mockllm/**" = ["E501", "S"]
+"src/tokenshield/demo/**" = ["E501"]
+"src/tokenshield/bench.py" = ["E501"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["pgvector.*", "tiktoken.*", "asgi_lifespan.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+markers = ["integration: needs Postgres, Redis and the mock upstream (make test-integration)"]
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["tokenshield"]
+branch = true
+# SQLAlchemy async runs DB calls through greenlets; without this, code after an await
+# on a session is not traced.
+concurrency = ["greenlet", "thread"]
+omit = ["*/migrations/*", "*/demo/*"]
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
