@@ -21,6 +21,7 @@ from tokenshield.core.container import Container
 from tokenshield.core.errors import install_error_handlers
 from tokenshield.core.logs import configure_logging
 from tokenshield.core.middleware import RequestContextMiddleware
+from tokenshield.core.tracing import configure_tracing
 from tokenshield.gateway.router import router as gateway_router
 from tokenshield.gateway.tokens import warm_up
 from tokenshield.keys.router import router as keys_router
@@ -46,6 +47,7 @@ token (`POST /api/v1/auth/login`).
 def create_app(settings: Settings | None = None, container: Container | None = None) -> FastAPI:
     settings = settings or get_settings()
     configure_logging(settings.log_level)
+    configure_tracing(settings)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:

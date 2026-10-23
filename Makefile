@@ -41,7 +41,8 @@ up-aws: env ## Start the stack against real AWS resources (needs deploy/compose/
 
 demo: ## Seed the demo organisation and send live traffic through the gateway (prints logins)
 	$(FLOCI) exec -T -e DEMO_PASSWORD=$$(grep TS_DEMO_PASSWORD $(COMPOSE_DIR)/.env | cut -d= -f2) \
-	  -e MOCK_LLM_URL=http://mock-llm:4150 -e TOKENSHIELD_API_URL=http://localhost:8080 api tokenshield seed-demo
+	  -e MOCK_LLM_URL=http://mock-llm:4150 -e TOKENSHIELD_API_URL=http://localhost:8080 \
+	  -e TOKENSHIELD_PUBLIC_URL=http://localhost:$${TS_API_PORT:-4130} api tokenshield seed-demo
 
 down: ## Stop the stack and delete its volumes
 	-$(FLOCI) down -v --remove-orphans

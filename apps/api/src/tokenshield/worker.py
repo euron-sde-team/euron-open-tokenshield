@@ -35,6 +35,7 @@ from tokenshield.cache.store import NEW_ENTRIES_KEY, STATS_KEY
 from tokenshield.core.config import Settings, get_settings
 from tokenshield.core.container import Container
 from tokenshield.core.logs import configure_logging
+from tokenshield.core.tracing import configure_tracing
 from tokenshield.gateway.service import POLICY_HITS_KEY
 from tokenshield.policies.models import PolicyRule
 from tokenshield.usage.models import ReconciliationEvent, UsageEvent
@@ -330,6 +331,7 @@ class Worker:
 async def main(settings: Settings | None = None) -> None:
     settings = settings or get_settings()
     configure_logging(settings.log_level)
+    configure_tracing(settings, service="tokenshield-worker")
     container = Container.build(settings)
     worker = Worker(container)
     loop = asyncio.get_running_loop()

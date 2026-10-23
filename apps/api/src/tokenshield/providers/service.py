@@ -7,6 +7,7 @@ import uuid
 
 import httpx
 from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tokenshield.audit.service import Actor, audit
@@ -182,7 +183,7 @@ async def _latest_prices(
     rows = await session.scalars(
         select(ModelPrice)
         .where(ModelPrice.model_id.in_(model_ids))
-        .distinct(ModelPrice.model_id)
+        .ext(distinct_on(ModelPrice.model_id))
         .order_by(ModelPrice.model_id, ModelPrice.version.desc())
     )
     return {p.model_id: p for p in rows.all()}

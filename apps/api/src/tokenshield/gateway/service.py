@@ -56,6 +56,7 @@ from tokenshield.core.errors import (
     UpstreamTimeoutError,
 )
 from tokenshield.core.money import nusd_to_usd
+from tokenshield.core.tracing import tracer
 from tokenshield.gateway import metrics
 from tokenshield.gateway.catalog import Catalog, ModelInfo
 from tokenshield.gateway.context import RequestContext
@@ -143,6 +144,13 @@ class GatewayService:
     # ── Entry points ────────────────────────────────────────────────────────
 
     async def chat(self, ctx: RequestContext, body: dict[str, Any]) -> Response:
+        with tracer.start_as_current_span("gateway.chat") as span:
+            span.set_attribute("tokenshield.request_id", ctx.request_id)
+            span.set_attribute("tokenshield.model", str(body.get("model") or ""))
+            span.set_attribute("tokenshield.project_id", str(ctx.project.id))
+            return await self._chat(ctx, body)
+
+    async def _chat(self, ctx: RequestContext, body: dict[str, Any]) -> Response:
         stream = bool(body.get("stream"))
         alias = str(body.get("model") or "")
         idem_lock: str | None = None
@@ -151,20 +159,23 @@ class GatewayService:
                 replay, idem_lock = await self._idempotency_begin(ctx)
                 if replay is not None:
                     return replay
-            adm = await self._admit(ctx, body)
+            with tracer.start_as_current_span("gateway.admit"):
+                adm = await self._admit(ctx, body)
         except AppError as err:
             await self._release_idem(idem_lock)
             await self._record_rejection(ctx, alias, err, stream=stream)
             raise
         streaming_handoff = False
         try:
-            hit = await self._cache_lookup(ctx, adm)
+            with tracer.start_as_current_span("gateway.cache_lookup"):
+                hit = await self._cache_lookup(ctx, adm)
             if hit is not None:
                 cached, status = hit
                 return await self._serve_cached(ctx, adm, cached, status, stream)
             try:
                 await self._check_retry_storm(ctx, adm)
-                await self._reserve(ctx, adm)
+                with tracer.start_as_current_span("gateway.reserve"):
+                    await self._reserve(ctx, adm)
             except AppError as err:
                 await self._record_rejection(ctx, alias, err, stream=stream, adm=adm)
                 raise
@@ -627,7 +638,9 @@ class GatewayService:
         adapter = self.c.adapters.get(adm.model.provider_kind)
         t0 = time.perf_counter()
         try:
-            result = await adapter.chat(self._target(adm.model), adm.body)
+            with tracer.start_as_current_span("gateway.upstream") as span:
+                span.set_attribute("tokenshield.provider", adm.model.provider_name)
+                result = await adapter.chat(self._target(adm.model), adm.body)
         except (UpstreamNotSentError, UpstreamHTTPError, UpstreamUncertainError) as exc:
             await self._upstream_failed(ctx, adm, exc)
         ctx.upstream_s = time.perf_counter() - t0

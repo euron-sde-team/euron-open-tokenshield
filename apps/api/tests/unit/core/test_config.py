@@ -52,3 +52,12 @@ def test_cors_origins_accept_comma_string() -> None:
 def test_cors_origins_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CORS_ORIGINS", "http://localhost:4110,http://127.0.0.1:4110")
     assert Settings().cors_origins == ["http://localhost:4110", "http://127.0.0.1:4110"]
+
+
+def test_tracing_is_a_no_op_until_enabled() -> None:
+    from tokenshield.core import tracing
+
+    tracing.configure_tracing(Settings())
+    assert tracing._configured is False
+    with tracing.tracer.start_as_current_span("probe") as span:
+        assert not span.is_recording()

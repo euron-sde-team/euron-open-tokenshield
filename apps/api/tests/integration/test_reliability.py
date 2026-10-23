@@ -139,7 +139,9 @@ async def test_usage_stream_survives_a_crashed_worker(api: Api, world: World) ->
     assert await redis.xlen(STREAM_KEY) == 0
 
 
-async def test_redis_outage_records_directly_to_postgres(api: Api, world: World, settings: object) -> None:
+async def test_redis_outage_records_directly_to_postgres(
+    api: Api, world: World, settings: object
+) -> None:
     from httpx import ASGITransport, AsyncClient
 
     from tokenshield.main import create_app
@@ -147,8 +149,15 @@ async def test_redis_outage_records_directly_to_postgres(api: Api, world: World,
     app = create_app(settings.model_copy(update={"redis_url": "redis://127.0.0.1:1/0"}))  # type: ignore[attr-defined]
     from asgi_lifespan import LifespanManager
 
-    async with LifespanManager(app, startup_timeout=60, shutdown_timeout=30), AsyncClient(transport=ASGITransport(app=app), base_url="http://t") as client:
-        resp = await client.post("/v1/chat/completions", json=chat("no redis here"), headers={"authorization": f"Bearer {world.key}"})
+    async with (
+        LifespanManager(app, startup_timeout=60, shutdown_timeout=30),
+        AsyncClient(transport=ASGITransport(app=app), base_url="http://t") as client,
+    ):
+        resp = await client.post(
+            "/v1/chat/completions",
+            json=chat("no redis here"),
+            headers={"authorization": f"Bearer {world.key}"},
+        )
         assert resp.status_code == 200
     events = (await api.ok("GET", "/api/v1/usage/events"))["items"]
     assert len(events) == 1 and events[0]["status"] == "SUCCESS"

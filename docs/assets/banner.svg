@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="t d">
+  <title id="t">Euron TokenShield</title>
+  <desc id="d">Self-hosted AI gateway that stops LLM spend before it happens</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0d1a"/>
+      <stop offset="1" stop-color="#11142a"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#818cf8"/>
+      <stop offset="1" stop-color="#4f46e5"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#6366f1" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="320" rx="16" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="16" fill="url(#grid)"/>
+
+  <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="72" y="140" fill="#eef0fb" font-size="54" font-weight="650" letter-spacing="-1.2">Euron TokenShield</text>
+    <text x="74" y="186" fill="#9aa1c4" font-size="22" font-weight="400">Stop LLM spend before it happens. One OpenAI-compatible gateway.</text>
+    <text x="74" y="246" font-family="JetBrains Mono, SFMono-Regular, Menlo, monospace" font-size="15" fill="#7e86ad" xml:space="preserve">atomic hard budgets<tspan fill="#2b3056">  /  </tspan>privacy-scoped cache<tspan fill="#2b3056">  /  </tspan>agent loop caps<tspan fill="#2b3056">  /  </tspan>Terraform</text>
+  </g>
+
+  <!-- Requests meeting the shield: one passes to the provider, one is answered from cache, one is blocked -->
+  <g transform="translate(860 52)" font-family="JetBrains Mono, SFMono-Regular, Menlo, monospace" font-size="11">
+    <circle cx="170" cy="108" r="120" fill="url(#halo)"/>
+    <!-- incoming -->
+    <rect x="0" y="40" width="96" height="26" rx="8" fill="#1a1e3b"/>
+    <text x="12" y="57" fill="#a5b4fc">chat-small</text>
+    <rect x="0" y="95" width="96" height="26" rx="8" fill="#1a1e3b"/>
+    <text x="12" y="112" fill="#a5b4fc">same prompt</text>
+    <rect x="0" y="150" width="96" height="26" rx="8" fill="#1a1e3b"/>
+    <text x="12" y="167" fill="#a5b4fc">chat-large</text>
+    <path d="M100 53 H138 M100 108 H138 M100 163 H138" stroke="#3b4170" stroke-width="2" stroke-dasharray="4 4"/>
+    <!-- shield -->
+    <path d="M170 34 L128 50 v34 c0 28 18 50 42 57 c24 -7 42 -29 42 -57 V50 Z" transform="translate(0 20)" fill="url(#shield)"/>
+    <rect x="152" y="94" width="36" height="12" rx="6" fill="#ffffff"/>
+    <circle cx="170" cy="122" r="5" fill="#ffffff" fill-opacity="0.85"/>
+    <!-- outcomes -->
+    <path d="M214 53 H262" stroke="#818cf8" stroke-width="2"/>
+    <rect x="266" y="40" width="126" height="26" rx="8" fill="#1b2347"/>
+    <text x="278" y="57" fill="#c7d2fe">provider  $0.0002</text>
+    <path d="M214 108 H262" stroke="#34d399" stroke-width="2"/>
+    <rect x="266" y="95" width="126" height="26" rx="8" fill="#0f2a24"/>
+    <text x="278" y="112" fill="#6ee7b7">cache hit  $0</text>
+    <path d="M214 163 H238" stroke="#fb7185" stroke-width="2"/>
+    <rect x="266" y="150" width="126" height="26" rx="8" fill="#2e1520"/>
+    <text x="278" y="167" fill="#fda4af">402 blocked</text>
+    <path d="M244 157 l12 12 M256 157 l-12 12" stroke="#fb7185" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>

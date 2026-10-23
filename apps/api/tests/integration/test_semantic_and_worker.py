@@ -25,7 +25,10 @@ async def indexed(api: Api, expected: int = 1) -> None:
 
     for _ in range(100):
         async with api.app.state.container.db.sessionmaker() as session:
-            if await session.scalar(select(func.count()).select_from(SemanticCacheEntry)) >= expected:
+            if (
+                await session.scalar(select(func.count()).select_from(SemanticCacheEntry))
+                >= expected
+            ):
                 return
         await asyncio.sleep(0.05)
     raise AssertionError("semantic vector was not indexed")

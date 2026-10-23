@@ -15,6 +15,7 @@ from decimal import Decimal
 from typing import Any
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tokenshield.budgets.models import Budget
@@ -133,7 +134,7 @@ async def load_catalog(session: AsyncSession, sealer: KeySealer) -> Catalog:
         for p in (
             await session.scalars(
                 select(ModelPrice)
-                .distinct(ModelPrice.model_id)
+                .ext(distinct_on(ModelPrice.model_id))
                 .order_by(ModelPrice.model_id, ModelPrice.version.desc())
             )
         ).all()

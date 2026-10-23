@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="t d">
+  <title id="t">TokenShield architecture</title>
+  <desc id="d">Applications call the gateway, which uses Redis for budgets, limits, cache and the usage stream, Postgres for configuration and the ledger, KMS for provider keys, and calls LLM providers. Workers drain the usage stream into Postgres. The dashboard reads the admin API.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4f46e5"/></marker>
+    <filter id="s" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.10"/></filter>
+  </defs>
+  <rect width="1200" height="560" rx="16" fill="#f6f7fb"/>
+  <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" fill="#0f172a">
+
+    <!-- clients -->
+    <text x="40" y="44" font-size="12" font-weight="600" fill="#64748b" letter-spacing="1">CLIENTS</text>
+    <g filter="url(#s)">
+      <rect x="40" y="62" width="200" height="64" rx="12" fill="#fff"/>
+      <rect x="40" y="142" width="200" height="64" rx="12" fill="#fff"/>
+      <rect x="40" y="222" width="200" height="64" rx="12" fill="#fff"/>
+      <rect x="40" y="404" width="200" height="64" rx="12" fill="#fff"/>
+    </g>
+    <text x="60" y="90" font-size="15" font-weight="600">Applications</text>
+    <text x="60" y="110" font-size="12" fill="#64748b">OpenAI SDK, base_url only</text>
+    <text x="60" y="170" font-size="15" font-weight="600">Agents</text>
+    <text x="60" y="190" font-size="12" fill="#64748b">x-tokenshield-task-id</text>
+    <text x="60" y="250" font-size="15" font-weight="600">Backend jobs</text>
+    <text x="60" y="270" font-size="12" fill="#64748b">Idempotency-Key</text>
+    <text x="60" y="432" font-size="15" font-weight="600">Dashboard</text>
+    <text x="60" y="452" font-size="12" fill="#64748b">Next.js, same-origin /api</text>
+
+    <!-- gateway -->
+    <rect x="320" y="52" width="380" height="260" rx="16" fill="#eef0ff"/>
+    <text x="344" y="84" font-size="16" font-weight="700" fill="#3730a3">Gateway  /v1</text>
+    <text x="344" y="104" font-size="12" fill="#4f46e5">FastAPI, stateless, N replicas</text>
+    <g font-size="12.5" fill="#1e1b4b">
+      <rect x="344" y="122" width="160" height="34" rx="9" fill="#fff"/><text x="358" y="144">1 Authenticate key</text>
+      <rect x="516" y="122" width="160" height="34" rx="9" fill="#fff"/><text x="530" y="144">2 Estimate tokens</text>
+      <rect x="344" y="166" width="160" height="34" rx="9" fill="#fff"/><text x="358" y="188">3 Policies, limits</text>
+      <rect x="516" y="166" width="160" height="34" rx="9" fill="#fff"/><text x="530" y="188">4 Cache or coalesce</text>
+      <rect x="344" y="210" width="160" height="34" rx="9" fill="#fff"/><text x="358" y="232">5 Reserve budgets</text>
+      <rect x="516" y="210" width="160" height="34" rx="9" fill="#fff"/><text x="530" y="232">6 Call provider</text>
+      <rect x="344" y="254" width="332" height="34" rx="9" fill="#4f46e5"/><text x="358" y="276" fill="#fff">7 Settle: budgets, TPM, usage, cache in one round trip</text>
+    </g>
+
+    <!-- admin api -->
+    <rect x="320" y="392" width="380" height="88" rx="16" fill="#fff" filter="url(#s)"/>
+    <text x="344" y="424" font-size="15" font-weight="600">Admin API  /api/v1</text>
+    <text x="344" y="446" font-size="12" fill="#64748b">projects, keys, budgets, policies, models,</text>
+    <text x="344" y="464" font-size="12" fill="#64748b">analytics, exports, audit (roles, CSRF)</text>
+
+    <!-- state -->
+    <text x="780" y="44" font-size="12" font-weight="600" fill="#64748b" letter-spacing="1">STATE AND KEYS</text>
+    <g filter="url(#s)">
+      <rect x="780" y="62" width="180" height="96" rx="12" fill="#fff"/>
+      <rect x="780" y="176" width="180" height="96" rx="12" fill="#fff"/>
+      <rect x="780" y="290" width="180" height="64" rx="12" fill="#fff"/>
+      <rect x="780" y="392" width="180" height="88" rx="12" fill="#fff"/>
+    </g>
+    <text x="798" y="88" font-size="15" font-weight="600">Redis</text>
+    <text x="798" y="108" font-size="12" fill="#64748b">budget counters (Lua)</text>
+    <text x="798" y="124" font-size="12" fill="#64748b">limits, cache, locks</text>
+    <text x="798" y="140" font-size="12" fill="#64748b">usage stream</text>
+    <text x="798" y="202" font-size="15" font-weight="600">PostgreSQL</text>
+    <text x="798" y="222" font-size="12" fill="#64748b">config, prices, ledger</text>
+    <text x="798" y="238" font-size="12" fill="#64748b">append-only usage, audit</text>
+    <text x="798" y="254" font-size="12" fill="#64748b">pgvector, rollups</text>
+    <text x="798" y="316" font-size="15" font-weight="600">KMS</text>
+    <text x="798" y="336" font-size="12" fill="#64748b">sealed provider keys</text>
+    <text x="798" y="418" font-size="15" font-weight="600">Worker</text>
+    <text x="798" y="438" font-size="12" fill="#64748b">drain stream, rollups</text>
+    <text x="798" y="454" font-size="12" fill="#64748b">settle uncertain, flush</text>
+    <text x="798" y="470" font-size="12" fill="#64748b">stats (leased jobs)</text>
+
+    <!-- providers -->
+    <text x="1020" y="44" font-size="12" font-weight="600" fill="#64748b" letter-spacing="1">PROVIDERS</text>
+    <g filter="url(#s)">
+      <rect x="1020" y="62" width="150" height="56" rx="12" fill="#fff"/>
+      <rect x="1020" y="132" width="150" height="56" rx="12" fill="#fff"/>
+      <rect x="1020" y="202" width="150" height="56" rx="12" fill="#fff"/>
+      <rect x="1020" y="392" width="150" height="88" rx="12" fill="#fff"/>
+    </g>
+    <text x="1036" y="95" font-size="14" font-weight="600">OpenAI-compatible</text>
+    <text x="1036" y="165" font-size="14" font-weight="600">Anthropic</text>
+    <text x="1036" y="235" font-size="14" font-weight="600">Local (Ollama, vLLM)</text>
+    <text x="1036" y="420" font-size="14" font-weight="600">S3</text>
+    <text x="1036" y="440" font-size="12" fill="#64748b">CSV exports,</text>
+    <text x="1036" y="456" font-size="12" fill="#64748b">presigned links</text>
+  </g>
+
+  <!-- arrows -->
+  <g fill="none" stroke-width="1.8">
+    <!-- clients to the gateway and admin API -->
+    <path d="M240 94 C280 94 290 130 318 130" stroke="#4f46e5" marker-end="url(#g)"/>
+    <path d="M240 174 H318" stroke="#4f46e5" marker-end="url(#g)"/>
+    <path d="M240 254 C280 254 290 220 318 220" stroke="#4f46e5" marker-end="url(#g)"/>
+    <path d="M240 436 H318" stroke="#64748b" marker-end="url(#a)"/>
+    <!-- gateway to state -->
+    <path d="M700 110 H778" stroke="#64748b" marker-end="url(#a)"/>
+    <path d="M700 224 H778" stroke="#64748b" marker-end="url(#a)"/>
+    <path d="M700 300 C740 300 750 322 778 322" stroke="#64748b" marker-end="url(#a)"/>
+    <!-- gateway to providers, through the gap between Redis and Postgres -->
+    <path d="M700 167 H984" stroke="#4f46e5"/>
+    <path d="M984 167 C998 167 1000 90 1018 90" stroke="#4f46e5" marker-end="url(#g)"/>
+    <path d="M984 167 C998 167 1000 160 1018 160" stroke="#4f46e5" marker-end="url(#g)"/>
+    <path d="M984 167 C998 167 1000 230 1018 230" stroke="#4f46e5" marker-end="url(#g)"/>
+    <!-- admin API to Postgres and to S3 -->
+    <path d="M700 410 C744 410 744 250 778 250" stroke="#64748b" marker-end="url(#a)"/>
+    <path d="M700 466 C760 520 980 520 1080 482" stroke="#64748b" marker-end="url(#a)"/>
+    <!-- worker drains the Redis stream into Postgres (left of KMS) -->
+    <path d="M780 420 H764 V262 H778" stroke="#64748b" marker-end="url(#a)"/>
+  </g>
+  <g font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#64748b">
+    <text x="716" y="103">reserve, settle</text>
+    <text x="716" y="217">catalog (cached)</text>
+    <text x="716" y="160" fill="#4f46e5">provider call</text>
+    <text x="860" y="496">CSV exports</text>
+    <text x="708" y="430">config, analytics</text>
+    <text x="320" y="530">Locally every box runs in Docker (Floci emulates KMS and S3); on AWS: ECS Fargate, RDS, ElastiCache, KMS, S3, ALB with WAF.</text>
+  </g>
+</svg>

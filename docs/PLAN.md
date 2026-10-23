@@ -141,3 +141,23 @@ web 4110, api 4130, postgres 4142, redis 4179, floci 4166, mock LLM 4150.
   watch requests appear, hit the budget and see the rejection, cache hit shows savings,
   export a report.
 - Browser QA (Puppeteer): every page, light and dark, desktop and phone.
+
+## Release verification (0.1.0)
+
+Every acceptance criterion is proven by an automated test (integration tests run against
+real Postgres, Redis and the mock provider over HTTP; e2e against the full Compose stack).
+
+| # | Criterion | Proven by |
+| --- | --- | --- |
+| 1 | Unmodified OpenAI SDK works | `test_gateway.py::test_ac1_unmodified_openai_sdk_non_streaming`, `..._streaming`, `test_ac1_sdk_lists_models_and_embeds` |
+| 2 | Over-budget request refused with zero upstream calls | `test_budgets.py::test_ac2_exhausted_budget_rejects_with_zero_upstream_calls`; e2e `02-shield` |
+| 3 | 50 concurrent requests, budget fits 10: exactly 10 reach upstream | `test_budgets.py::test_ac3_concurrent_requests_cannot_overspend` |
+| 4 | Full accounting with price version; unpriced flagged | `test_gateway.py::test_ac4_*` (3 tests), `test_admin.py::test_new_price_applies_to_new_requests_only` |
+| 5 | Cache hit with zero upstream calls, savings reported | `test_cache.py::test_ac5_*` (2 tests); e2e `02-shield`, `03-playground` |
+| 6 | No cross-user or cross-project cache leaks; sensitive bypass | `test_cache.py::test_ac6_*` (3 tests), `test_semantic_cache_respects_context` |
+| 7 | Identical concurrent requests coalesced | `test_cache.py::test_ac7_identical_concurrent_requests_coalesce` |
+| 8 | Retry storms throttled, agent loops stopped, output capped | `test_policies.py::test_ac8_*` (3 tests) and agent cost, loop and limit tests |
+| 9 | Timeout is UNCERTAIN, held, reconciled, never zero | `test_reliability.py::test_ac9_timeout_is_uncertain_and_holds_reservation` |
+| 10 | Redis down: hard budgets fail closed | `test_budgets.py::test_ac10_redis_down_fails_closed_for_hard_budgets` |
+| 11 | Dashboard shows usage, rejections, savings; CSV export | `test_analytics.py::test_ac11_export_csv` and analytics tests; e2e `02-shield`, `04-reports-and-roles` |
+| 12 | `make up` starts everything with Terraform on Floci | Compose stack brought up from scratch, seeded, e2e and QA run against it; option matrix on its Floci |

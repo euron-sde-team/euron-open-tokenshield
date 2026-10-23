@@ -718,7 +718,9 @@ async def _traffic(api_url: str, created: Created, n: int) -> dict[str, int]:
 async def run(days: int = 60, traffic: int = 120, api_url: str = "http://localhost:4130") -> None:
     settings = get_settings()
     if settings.environment == "production":
-        raise SystemExit("seed-demo creates well-known demo credentials and refuses to run in production")
+        raise SystemExit(
+            "seed-demo creates well-known demo credentials and refuses to run in production"
+        )
     container = Container.build(settings)
     try:
         async with container.db.sessionmaker() as session:
@@ -744,11 +746,13 @@ async def run(days: int = 60, traffic: int = 120, api_url: str = "http://localho
             or os.environ.get("TS_DEMO_PASSWORD")
             or "ShieldDemo2026"
         )
+        # Inside Compose the seed reaches the API on its container port; print the host URL.
+        public_url = os.environ.get("TOKENSHIELD_PUBLIC_URL", api_url)
         print()
         print(f"  dashboard login   {OWNER_EMAIL} / {password}")
         print(f"  gateway key       {created.keys['Alpha Tutor'].key}  (Alpha Tutor)")
         print("  try it:")
-        print(f"    curl {api_url}/v1/chat/completions -H 'authorization: Bearer <key>' \\")
+        print(f"    curl {public_url}/v1/chat/completions -H 'authorization: Bearer <key>' \\")
         print("      -H 'content-type: application/json' \\")
         print(
             '      -d \'{"model":"chat-small","temperature":0,"messages":[{"role":"user","content":"What is photosynthesis?"}]}\''
